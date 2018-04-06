@@ -212,7 +212,8 @@ void aws_iot_task(void *param) {
         abort();
     }
 
-    const char *TOPIC = "test_topic/esp32";
+    //const char *TOPIC = "test_topic/esp32";         // Is this where the bug is
+    const char *TOPIC = "PxC_Test_Topic/esp32";
     const int TOPIC_LEN = strlen(TOPIC);
 
     ESP_LOGI(TAG, "Subscribing...");
