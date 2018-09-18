@@ -5,7 +5,7 @@ void initialise_wifi(void);
 void aws_iot_THREAD(void *param);
 
 
-#define WIFI_SSID "David Katz's iPhone"
-#define WIFI_PASS "IamADaddy2"
+#define WIFI_SSID "KatzNetwork1"
+#define WIFI_PASS "momanddad"
 
 #endif
