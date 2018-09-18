@@ -20,18 +20,23 @@
 #include "nvs_flash.h"
 #include "hw_init.h"
 #include "AWS/aws_iot.h"
+#include "esp_log.h"
 
 
 #define LED (13)
-
+TaskHandle_t    display_test_HANDLE;
+TaskHandle_t    led_blink_HANDLE;
+TaskHandle_t    console_test_HANDLE;
+TaskHandle_t    aws_iot_HANDLE;
 
 static void display_test_THREAD(void *pvParameters);
 static void led_blink_THREAD(void *pvParameters);
 static void console_test_THREAD(void *pvParameters);
 
+
 void app_main()
 {
-    TaskHandle_t th[12];
+    
 
     //nvs_flash_init();
 
@@ -45,10 +50,10 @@ void app_main()
     
     initialise_wifi();
 
-    xTaskCreate(display_test_THREAD,"display_test_THREAD",  2048,   NULL, 12,   th[0]);
-    xTaskCreate(led_blink_THREAD,   "led_blink_THREAD",     2048,   NULL, 11,   th[1]);
-    xTaskCreate(console_test_THREAD,"console_test_THREAD",  2048,   NULL, 10,   th[2]);
-    xTaskCreatePinnedToCore(&aws_iot_task, "aws_iot_task",  9216,   NULL, 5,   th[3], 1);
+    xTaskCreate(display_test_THREAD,"display_test_THREAD",      2 * 1024,   NULL, 12,   display_test_HANDLE);
+    xTaskCreate(led_blink_THREAD,   "led_blink_THREAD",         2 * 1024,   NULL, 11,   led_blink_HANDLE);
+    xTaskCreate(console_test_THREAD,"console_test_THREAD",      2 * 1024,   NULL, 10,   console_test_HANDLE);
+ //   xTaskCreatePinnedToCore(&aws_iot_THREAD, "aws_iot_THREAD",  16 * 1024,   NULL, 5,   aws_iot_HANDLE, 1);
 }
 
 
@@ -57,15 +62,23 @@ void app_main()
  * 
  * *************************************************************************/
  
+
+ /************************************************
+  * console_test_THREAD
+  * 
+  * *********************************************/
 static void console_test_THREAD(void *pvParameters)
 {
     static int counter = 0;
     while(1){
-        printf("Hello Phoenix Contact %d\r\n",counter++);
+         ESP_LOGI("console_test_THREAD", "Counter = %i\r",counter);
         vTaskDelay(1000 / portTICK_RATE_MS);
     }
 }
-
+ /************************************************
+  * display_test_THREAD
+  * 
+  * *********************************************/
 static void display_test_THREAD(void *pvParameters)
 {
     char counter = 0;
@@ -76,12 +89,15 @@ static void display_test_THREAD(void *pvParameters)
         sprintf(temp_text,"Busy Count: %d",counter++);
         SSD1306_Puts(temp_text, &Font_7x10, SSD1306_COLOR_WHITE); 
         SSD1306_UpdateScreen();
-        
+        ESP_LOGI("display_test_THREAD", "Counter = %i\r",counter);
         vTaskDelay(100 / portTICK_RATE_MS);
     }
     
 }
-
+ /************************************************
+  * led_blink_THREAD
+  * 
+  * *********************************************/
 static void led_blink_THREAD(void *pvParameters)
 {
     gpio_pad_select_gpio(LED);
@@ -94,5 +110,6 @@ static void led_blink_THREAD(void *pvParameters)
         gpio_set_level(LED, 1);
         vTaskDelay(200 / portTICK_RATE_MS);
     }
+     ESP_LOGI("led_blink_THREAD", "BLINK\r");
 
 }

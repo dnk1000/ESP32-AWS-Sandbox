@@ -2,7 +2,7 @@
 #define ___AWS_IOT_H___
 
 void initialise_wifi(void);
-void aws_iot_task(void *param);
+void aws_iot_THREAD(void *param);
 
 
 #define WIFI_SSID "David Katz's iPhone"

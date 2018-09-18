@@ -136,9 +136,9 @@ void disconnectCallbackHandler(AWS_IoT_Client *pClient, void *data) {
 }
 
 /*************************************************************
-aws_iot_task
+aws_iot_THREAD
 ***************************************************************/
-void aws_iot_task(void *param) {
+void aws_iot_THREAD(void *param) {
     char cPayload[100];
     char tempText[20];
 
